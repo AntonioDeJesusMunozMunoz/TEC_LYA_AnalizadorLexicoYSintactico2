@@ -4,4 +4,12 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-        main.cpp
+        handlefiles.cpp \
+        lexico.cpp \
+        main.cpp \
+        sintactico.cpp
+
+HEADERS += \
+    handlefiles.h \
+    lexico.h \
+    sintactico.h
