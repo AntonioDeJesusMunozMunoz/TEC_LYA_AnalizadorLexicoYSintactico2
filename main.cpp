@@ -146,23 +146,20 @@ int main(void)
     char resp;
     do
     {
+        /*CREACIÓN DEL ARCHIVO*/
+        //leo entrada
         puts("Desea Generar el Archivo (s/n) : ");
-
-        //cout<<"Desea Generar el Archivo (s/n) : ";
-        //resp = getchar();
-        //cin>>resp;
-
         resp = cin.get();
-        //cin.get();  //USAR CUANDO SE REQUIERA ELIMINAR EL ENTER
 
-
-        // if(resp==0)  //NULL
-        //   cin.get();// getch();
-
+        //si dijo que si, genero el archivo
         if(strchr("Ss",resp))
             generararch();
+
+        /*LECTURA DE ARCHIVO*/
         vabrirarch();
         numBytesArch= bytesarch();
+
+        //si no tiene datos, le digo
         if(numBytesArch==0)
         {
             printf("El archivo NO Tiene Datos. Pulse una tecla");
@@ -171,43 +168,50 @@ int main(void)
                 exit(-1);
             }
         }
-        //fclose(Fd);
-
-        else
+        //si si tiene, corro el analizador léxico
+        else{
             vanalisislexico();
+        }
         fclose(Fd);
+
+
+        /*MUESTRA DEL RESULTADO DEL ANALIZADOR LÉXICO*/
         printf("Salida del Analizador Lexico (asTokens)");
         vmuestra();
+
+
+        /*ANALIZADOR SINTÁCTICO*/
         printf("Pulse una tecla para continuar");
         if(cin.get() == 0) //getch()==0)
             cin.get();     //getch();
         vanalisis_sintactico();
         cin.get();
-        printf("Presiona (sS) para continuar ? : " );
+
+
+        /*S PARA CONTINUAR*/
+        printf("continuar (s/n)? : " );
         cin>>resp;
         cin.get();
+
     }while (strchr("Ss",resp));
 
     return 0;
 }
 void generararch()
 {
+    /*VARIABLES NECESARIAS*/
     char car;
     char nomArch[100];
-
-    // char *nombre = new char[100];
-    //cin.getline(nombre,100,'\n');
     string nombre;
+
+
+    /*LEO NOMBRE*/
     printf("Nombre del Archivo a GENERAR (sin extension): ");
-    //gets(Nombre);  //<--- ERROR CON ESTE METODO
     cin>>nombre;
     cin.get();    //ELIMINAR ENTER
 
-    //PATH APP. QT
-    // /Users/martinos/Documents/MATERIAS/AUTOMATAS\ I/MATERIAL/UNIDAD\ IV\ SINTACTICO/ANALIZADOR\ SINTACTICO\ REVISADO/appAnalizadorSintactico_
 
-    //PATH APP. XCODE
-    //sprintf(nomArch,"/Users/martinos/Desktop/appASintactico_XCode/%s.dat",nombre.c_str());  //,'\0');
+    /*ABRO ARCHIVO*/
     sprintf(nomArch,"%s.dat",nombre.c_str());
     Fd = fopen(nomArch,"w+b");
     if(Fd == nullptr)
@@ -215,56 +219,59 @@ void generararch()
         cout<<"NO SE PUEDE ABRIR EL ARCHIVO : "<<nomArch;
         exit(-1);
     }
-    //puts("teclea el archivo (<ESC> para terminar el archivo): ");
+
     printf("teclea el archivo (<@> para terminar el archivo): \n");
-    //cin.get();  //eliminar el enter
-    //printf("Tecela <ESC> para terminar el archivo \n");
-    //LA INFO ESTA EN EL BUFFER
+
+
+    /*LOOP PARA GUARDAR LO ESCRITO EN ARCHIVO*/
     do
-    {          //CHECAR
-        // car = getchar();    //getche();
+    {
+        //Leo caracter
         car = cin.get();
-        //cin>>car;
-        if( car == '\n')  //13)
-        {
-            car = '\n';
+
+        //si es \n, salto linea
+        if( car == '\n')
             printf("\n");
-        }
-        //if(car == 0)  //NULL
-        //  car = cin.get();    //getch();
-        if(car != 64 && car != 8)
+
+        //si no es @ o BACKSPACE, lo escribe
+        if(car != '@' && car != 8)
             fwrite(&car,sizeof(car),1,Fd);
 
-    }while(car != 64);
+    //continua mientras no sea @
+    }while(car != '@');
 
+    //cierra archivo
     fclose(Fd);
-
 }
 
 void vabrirarch()
 {
+    /*VARIABLES NECESARIAS*/
     char nomArch[100];
-    //char nombre[100];
     char *nombre = new char[100];
 
+
+    /*LEO EL ARCHIVO*/
     printf("\n\n Nombre del Archivo a ABRIR(sin extension): ");
-    //gets(nombre);
-    //cin>>nombre;
-    cin.get();  //ELIMINAR EL ENTER
+    cin.get();                      //ELIMINAR EL ENTER
     cin.getline(nombre,100,'\n');
 
-    //sprintf(nomArch,"/Users/martinos/Desktop/appASintactico_XCode/%s.dat",nombre);  //,'\0');
+
+    //le añado .dat en vez de .txt
     sprintf(nomArch,"%s.dat",nombre);
 
-
+    //lo abro como binario con lectura y escritura
     Fd = fopen(nomArch,"r+b");
 
+    //si no lo pudo abrir
     if(Fd==NULL)
     {
+        //ERROR
         printf("NO SE PUEDE ABRIR EL ARCHIVO");
         exit(-1);    //cin.get();
 
     }
+    //si si pudo
     else
     {
         printf("EL ARCHIVO SE ENCUENTRA ABIERTO \n");
@@ -275,6 +282,7 @@ void vabrirarch()
 
 int bytesarch()
 {
+    /*ESTE METODO LEE LA LONGITUD EN EL ARCHIVO*/
     int aux;
     fseek(Fd,0L,SEEK_END);
     aux = (int) ftell(Fd);
@@ -639,6 +647,7 @@ void vanalisislexico()
             break;
         }/*switch*/
     } /*while*/
+    strcpy(asTokens[k], "$");
 }
 void viniedos()
 {
