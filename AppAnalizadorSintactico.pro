@@ -4,8 +4,12 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-        analizadorlexico.cpp \
-        main.cpp
+        handlefiles.cpp \
+        lexico.cpp \
+        main.cpp \
+        sintactico.cpp
 
 HEADERS += \
-    analizadorlexico.h
+    handlefiles.h \
+    lexico.h \
+    sintactico.h
