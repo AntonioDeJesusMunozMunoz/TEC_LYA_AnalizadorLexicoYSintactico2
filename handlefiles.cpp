@@ -18,13 +18,6 @@ void handleFiles::generarArch()
     cin>>nombre;
     cin.get();   //ELIMINAR ENTER
 
-    //PATH APP. QT
-    // /Users/martinos/Documents/MATERIAS/AUTOMATAS\ I/MATERIAL/UNIDAD\ IV\ SINTACTICO/ANALIZADOR\ SINTACTICO\ REVISADO/appAnalizadorSintactico_
-
-    //PATH APP. XCODE
-    //sprintf(nomArch,"/Users/martinos/Desktop/appASintactico_XCode/%s.dat",nombre.c_str());  //,'\0');
-
-
     sprintf(nomArch,"%s.dat",nombre.c_str());
     Fd = fopen(nomArch,"w+b");
 
@@ -41,12 +34,6 @@ void handleFiles::generarArch()
     do
     {          //CHECAR
         car = cin.get();
-
-        // if( car == '\n')  //13)
-        // {
-        //     car = '\n';
-        //     printf("\n");
-        // }
 
         if(car != 64 && car != 8)
             fwrite(&car,sizeof(car),1,Fd);
