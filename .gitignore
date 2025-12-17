@@ -1,2 +1,4 @@
 build/
 *.67aa979
+.cph/
+*.py
