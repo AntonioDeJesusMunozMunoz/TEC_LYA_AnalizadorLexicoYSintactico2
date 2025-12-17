@@ -4,148 +4,144 @@
 #define MAX 50
 #include <string.h>
 #include <iostream>
+#include <vector>
 
+
+using std::vector;
 using namespace std;
 
 class sintactico
 {
 private:
+    static const int NUM_NT = 21;
+    static const int NUM_TOK = 24;
+
     enum Token {
-        TOK_X = 0,          // "x" (dummy)
-        TOK_PUNTOYCOMA,     // ";"
-        TOK_COMA,           // ","
-        TOK_ASTERISCO,      // "*"
-        TOK_ID,             // "Id"
-        TOK_CORCHETE_ABRE,  // "["
-        TOK_CORCHETE_CIERRA,// "]"
-        TOK_NUM,            // "Num"
-        TOK_CHAR,           // "char"
-        TOK_INT,            // "int"
-        TOK_FLOAT,          // "float"
-        TOK_PUTS,           // "puts"
-        TOK_PAR_ABRE,       // "("
-        TOK_PAR_CIERRA,     // ")"
-        TOK_CTE_LIT,        // "Cte.Lit"
-        TOK_LLAVE_ABRE,     // "{"
-        TOK_LLAVE_CIERRA,   // "}"
-        TOK_ASIGNACION,     // "="
-        TOK_MAS,            // "+"
-        TOK_MENOS,          // "-"
-        TOK_DIV,            // "/"
-        TOK_REAL,            // "Real"
-        TOK_AMPER           //"&"
+        TOK_ID = 0,
+        TOK_MAS,
+        TOK_MENOS,
+        TOK_IGUAL,
+        TOK_ASTERISCO,
+        TOK_DIVISION,  //5
+        TOK_PUNTOYCOMA,
+        TOK_PARENTESISIZQ,
+        TOK_PARENTESISDER,
+        TOK_CORCHETEIZQ,
+        TOK_CORCHETEDER,   //10
+        TOK_LLAVEIZQ,
+        TOK_LLAVEDER,
+        TOK_COMA,
+        TOK_NUM,
+        TOK_REAL, //15
+        TOK_CHAR,
+        TOK_INT,
+        TOK_FLOAT,
+        TOK_PUTS,
+        TOK_CTE_LIT, //20
+        TOK_$,
+        TOK_e,
+        TOK_REFFERENCE
     };
 
     enum NoTerminal {
-        NT_X = 0,
-        NT_D,
+        NT_D = 0,
         NT_L,
         NT_LP,
         NT_I,
         NT_IP,
-        NT_A,
+        NT_A,  //5
         NT_AP,
         NT_K,
         NT_T,
-        NT_F,
-        NT_E,
-        NT_P,
         NT_TP,
-        NT_TPP,
-        NT_DP,
-        NT_EP,
-        NT_AR
+        NT_TPP,  //10
+        NT_AR,
+        NT_Dp,
+        NT_Ep,
+        NT_F,
+        NT_E,   //15
+        NT_P
     };
 
-    enum ParserConst {
-        VACIO = 999
+    enum TipoSimbolo {
+        TERMINAL,
+        NO_TERMINAL
     };
+
+    struct Simbolo {
+        TipoSimbolo tipo;
+        int valor;   // TOK_* o NT_*
+    };
+
+    struct Produccion {
+        vector<Simbolo> cuerpo;  // vacío = ε
+    };
+
+
+
 
     char (*tokens)[100];
     int cima = -1;
-    char pilac[MAX][10];
+    //char pilac[MAX][10];
+    vector<Simbolo> pila;
 
-    char token[23][8] = {"x", ";", ",", "*", "Id", "[", "]", "Num", "char", "int", "float", //float es indice 10
-                         "puts", "(", ")", "Cte.Lit", "{", "}", "=","+","-","/", "Real", "&"};
-
-    char varsint[21][5]={"x", "D", "L", "L'", "I", "I'", "A", "A'", "K",    //K es indice 8
-                           "T", "F", "E", "P", "T'", "T''", "Dp", "Ep", "Ar"};
-
-    // e -> cadena vacia
-    int tablaM[100][8]= {
-        {1, 5, 1, 5, 999, -1, 999, 999},           //    [       D->I';
-        {1, 5, 1, 5, 999, -1, 999, 999},           //    ;       D->I';
-        {1, 1, 1, 5, 999, -1, 999, 999},           //    id      D->PL';
-        {1, 7, 1, 5, 3, -1, 999, 999},             //    num     D->I'L';
-        {1, 8, 1, 9,  -1, 999, 999, 999},          //    char    D->T;
-        {1, 9, 1, 9,  -1, 999, 999, 999},          //    int     D->T;
-        {1, 10, 1, 9, -1, 999, 999, 999},          //    float   D->T;
-        {2, 3, 2, 4, 3, 999, 999, 999},            //    *       L->IL'
-        {2, 4, 2, 4, 3, 999, 999, 999},            //    Id      L->IL'
-        {3, 1, 3, 5, 999, 999, 999, 999},          //    ;       L'->I'
-        {3, 2, 3, -2, 4, 3, 999, 999},             //    ,       L'->,IL'
-        {3, 3, 3, -3, 8, 3, 999, 999},             //    *       L'->*KL'
-        {3, 18, 3, 12, 3, 999, 999, 999},          //    +       L'->PL'
-        {3, 19, 3, 12, 3, 999, 999, 999},          //    -       L'->PL'
-        {3, 20, 3, 12, 3, 999, 999, 999},          //    /       L'->PL'
-        {3, 14, 3, -14, 5, 999, 999, 999},         // cte.Lit.   L'->cte Lit. I'
-        {4, 3, 4, -3, -4, 5, 999, 999},            //    *       I->*Id I'
-        {4, 4, 4, -4, 5, 999, 999, 999},           //    Id      I->Id I'
-        {5, 1, 5, 999, 999, 999, 999, 999},        //    ;       I'->e
-        {5, 2, 5, 999, 999, 999, 999, 999},        //    ,       I'->e
-        {5, 5, 5, 6, 999, 999, 999, 999},          //    [       I' -> A
-        {5, 14, 5, -14, 999, 999, 999, 999},       // cte.Lit.   I'->cte lit.
-        {5, 17, 5, -17, 8, 999, 999, 999},         //   =        I'->=K
-        {6, 5, 6, -5, 8, 11, 999, 999},            //   [        A->[ KE
-        {7, 1, 7, 999, 999, 999, 999, 999},        //   ;        A'->e
-        {7, 2, 7, 999, 999, 999, 999, 999},        //   ,        A'->e
-        {7, 5, 7, -5, 13, -6, 7, 999},              //   [       A' -> [Num]A'          MOD
-        {7, 12, 7, -12, 999, 999, 999, 999},       //   (        A' -> (
-        {8, 4, 8, -4, 999, 999, 999, 999},         //   Id       K -> Id
-        {8, 5, 8, -5, 8, 11, 999, 999},            //   [        K -> [ KE
-        {8, 7, 8, -7, 999, 999, 999, 999},         //   Num      K -> Num
-        {8, 21, 8, -21, 999, 999, 999, 999},       //   Real     K -> Real
-        {8, 12, 8, -12, 8, 11, 999, 999},          //   (        K -> ( KE
-        {8, 15, 8, -15, 8, 10, 999, 999},          //   {        K -> { KF
-        {9, 8, 9, -8, 13,  999, 999, 999},         //   char     T->Char T'
-        {9, 9, 9, -9, 13,  999, 999, 999},         //   int      T->int T'
-        {9, 10, 9, -10, 13,  999, 999, 999},       //   float    T->float T'
-        {10, 11, 10, -11, 11, -1, 999, 999},       //   puts     F-> puts E;
-        {10, 16, 10, -16, 999, 999, 999, 999},     //   }        F-> };
-        {11, 6, 11, -6, 1, 999, 999, 999},         //   ]        E -> ]D
-        {11, 12, 11, -12, 12, -13, 999, 999},      //   (        E -> (P)
-        {11, 13, 11, -13, 999, 999, 999, 999},     //   )        E -> )
-        {11, 18, 11, 12,  11,  999, 999, 999},     //   +        E -> PE        NEW
-        {11, 19, 11, 12,  11,  999, 999, 999},     //   -        E -> PE        NEW
-        {11, 20, 11, 12,  11,  999, 999, 999},     //   /        E -> PE        NEW
-        {11, 3,  11, 12,  11,  999, 999, 999},     //   *        E -> PE        NEW
-        {12, 14, 12, -14, 999, 999, 999, 999},     //   cte lit  P->cte lit
-        {12, 18, 12, -18, 8, 999, 999, 999},       //   +        P -> + k
-        {12, 19, 12, -19, 8, 999, 999, 999},       //   -        P -> - k
-        {12, 20, 12, -20, 8, 999, 999, 999},       //   /        P ->/ k
-        {13, 4,  13, 2, 999, 999, 999, 999},       //   id       T' -> L            NEW
-        {13, 3,  13, -3, 16, -4, 15, 999},         //   *(punt)  T' -> *EpidDp      NEW //Muy restrictivo pero asi es
-        {13, 5,  13, -5, 14, 999,  999,  999},       //   [      T' -> [T''         NEW
-        {14, 7,  14, -7, -6, 17, 999, 999},      //   Num        T'' -> Num]Ar        NEW
-        {14, 6,  14, -6, -4, 999, 999, 999},     //   ]         T'' -> ]id            NEW
-        {15, 17, 15, -17, -22, -4, 999, 999},       //   =       DP -> =&id        NEW
-        {15, 1,  15, 999, 999, 999,999,999},       //   ;        DP -> e            NEW
-        {16, 3,  16, -3, 16, 999, 999, 999},       //   *        Ep -> *Ep          NEW
-        {16, 4,  16, 999, 999, 999, 999, 999},     //   id       Ep -> e            NEW
-        {17, 5,  17, -5,   14, 999, 999, 999},     //   [        Ar -> [T''         NEW
-        {17, 4,  17, -4,  999, 999, 999, 999},     //   id       Ar -> id           NEW
-        //{5, 7, 5, -7, 999, 999, 999, 999}, //Num I' -> Num
-        //{5, 12, 5, 7, 8, 11, 999, 999}, //( I' -> Num
+    char token[24][10] = {
+        "Id",        // TOK_ID = 0
+        "+",         // TOK_MAS
+        "-",         // TOK_MENOS
+        "=",         // TOK_IGUAL
+        "*",         // TOK_ASTERISCO
+        "/",         // TOK_DIVISION
+        ";",         // TOK_PUNTOYCOMA
+        "(",         // TOK_PARENTESISIZQ
+        ")",         // TOK_PARENTESISDER
+        "[",         // TOK_CORCHETEIZQ
+        "]",         // TOK_CORCHETEDER
+        "{",         // TOK_LLAVEIZQ
+        "}",         // TOK_LLAVEDER
+        ",",         // TOK_COMA
+        "Num",       // TOK_NUM
+        "Real",      // TOK_REAL
+        "char",      // TOK_CHAR
+        "int",       // TOK_INT
+        "float",     // TOK_FLOAT
+        "puts",      // TOK_PUTS
+        "Cte.Lit",   // TOK_CTE_LIT
+        "$",         // TOK_$
+        "",          // TOK_e
+        "&"          // TOK_REFFERENCE
     };
+
+    char varsint[21][5] = {
+        "D",    // NT_D = 0
+        "L",    // NT_L
+        "L'",   // NT_LP
+        "I",    // NT_I
+        "I'",   // NT_IP
+        "A",    // NT_A
+        "A'",   // NT_AP
+        "K",    // NT_K
+        "T",    // NT_T
+        "T'",   // NT_TP
+        "T''",  // NT_TPP
+        "Ar",   // NT_AR
+        "Dp",   // NT_Dp
+        "Ep",   // NT_Ep
+        "F",    // NT_F
+        "E",    // NT_E
+        "P"     // NT_P
+    };
+
+    Produccion tablaM[NUM_NT][NUM_TOK];
 
 
 public:
     sintactico(char (*tokens)[100]);
+    void cargarProducciones();
     void vanalisis_sintactico();
     void insertapila(string elem);
     void eliminapila();
     int estoken(char x[]);
-    int buscaTabla(char a[], char x[]);
 };
 
 #endif // SINTACTICO_H
