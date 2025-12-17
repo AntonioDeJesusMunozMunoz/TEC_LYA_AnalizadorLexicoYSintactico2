@@ -367,6 +367,7 @@ void lexico::vanalisislexico()
             break;
         }/*switch*/
     } /*while*/
+    strcpy(asTokens[k], "$"); //es como la 3ra vez que soluciono este bug
 }
 
 void lexico::viniedos()

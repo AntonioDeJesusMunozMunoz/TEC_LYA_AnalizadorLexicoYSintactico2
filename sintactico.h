@@ -33,6 +33,7 @@ private:
         TOK_MENOS,          // "-"
         TOK_DIV,            // "/"
         TOK_REAL            // "Real"
+        TOK_AMPER           //"&"
     };
 
     enum NoTerminal {
@@ -48,7 +49,13 @@ private:
         NT_T,
         NT_F,
         NT_E,
-        NT_P
+        NT_P,
+        NT_TP,
+        NT_TPP,
+        NT_TPPP,
+        NT_M,
+        NT_DP,
+        NT_EP
     };
 
     enum ParserConst {
@@ -127,7 +134,7 @@ private:
         {15, 3,  15, -3, 15, 999, 999, 999},       //   *(punt)  T''' -> *T'''      NEW
         {15, 4,  15, 16,999, 999, 999, 999},       //   id       T''' -> M          NEW
         {16, 4, 16, -4, 999, 999, 999, 999},       //   id       M -> id            NEW
-        {17, 17, 17, -17, -22, -4, 999, 999},       //   =        DP -> =&id         NEW
+        {17, 17, 17, -17, -22, -4, 999, 999},       //   =        DP -> =&id        NEW
         {17, 1,  17, 999, 999, 999,999,999},       //   ;        DP -> e            NEW
         {18, 3,  18, -3, 18, 999, 999, 999},       //   *        EP -> *EP          NEW
         {18, 4,  18, 999, 999, 999, 999, 999},     //   id       EP -> e            NEW
