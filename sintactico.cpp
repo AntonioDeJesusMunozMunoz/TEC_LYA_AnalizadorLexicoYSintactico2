@@ -125,7 +125,11 @@ void sintactico::vanalisis_sintactico()
     else
         pila.push_back({NO_TERMINAL, NT_D});
 
+    printf("\nSalida del Analizador Sintactico (asTokens): \n");
+    printf("Arreglo de Tokens: \n");
 
+    for(int i=0; strcmp(tokens[i], "$") != 0; i++)
+        printf("%s ", tokens[i]);
 
     cout << "\nProducciones:\n";
 
