@@ -96,7 +96,7 @@ void sintactico::vanalisis_sintactico()
             }
         }
     }while(strcmp(x, "$") != 0);
-    printf("\n");
+    printf("Sintaxis correcta\n");
 }
 
 void sintactico::insertapila(string elem)
@@ -142,15 +142,15 @@ int sintactico::buscaTabla(char a[], char x[])
 {
     int indx=0, inda=0, i;
 
-    for(i=0; i<23; i++)
+    for(i=0; i<35; i++)
         if(strcmp(a, token[i]) == 0)
             inda = i;//9 int
 
-    for(i=0; i<15; i++)
+    for(i=0; i<30; i++)
         if(strcmp(x, varsint[i]) == 0)
             indx=i; //1 D
 
-    for(i=0; i<44; i++)
+    for(i=0; i<100; i++)
     {
         if(indx == tablaM[i][0])
             if(inda == tablaM[i][1])

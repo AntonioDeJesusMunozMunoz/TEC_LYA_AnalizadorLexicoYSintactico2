@@ -60,8 +60,6 @@ int main(void)
 
         Fd = handleFiles::abrirArchivo();
 
-
-
         //NUMERO DE BYTES DEL ARCHIVO
         int numBytesArch = handleFiles::byteSearch(Fd);
 
@@ -97,7 +95,7 @@ int main(void)
         cin.get();
 
 
-        printf("Presiona (sS) para continuar ? : " );
+        printf("Presione (sS) para continuar: " );
         cin>>resp;
         cin.get();
 
