@@ -16,6 +16,7 @@ void sintactico::cargarProducciones()
     tablaM[NT_D][TOK_CHAR].cuerpo  = {{NO_TERMINAL, NT_T}                              , {TERMINAL, TOK_PUNTOYCOMA}, {NO_TERMINAL, NT_D}};
     tablaM[NT_D][TOK_INT].cuerpo   = {{NO_TERMINAL, NT_T}                              , {TERMINAL, TOK_PUNTOYCOMA}, {NO_TERMINAL, NT_D}};
     tablaM[NT_D][TOK_FLOAT].cuerpo = {{NO_TERMINAL, NT_T}                              , {TERMINAL, TOK_PUNTOYCOMA}, {NO_TERMINAL, NT_D}};
+    tablaM[NT_D][TOK_PUTS].cuerpo = {{NO_TERMINAL, NT_F}                              , {TERMINAL, TOK_PUNTOYCOMA}, {NO_TERMINAL, NT_D}};
 
     //PARA TERMINAR
     tablaM[NT_D][TOK_$].cuerpo = {{TERMINAL, TOK_e}};

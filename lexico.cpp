@@ -365,6 +365,21 @@ void lexico::vanalisislexico()
             iniToken=indice;
             viniedos();
             break;
+        case 41:
+            cCarent=nextchar();
+            if (cCarent == '&'){
+                edoAct = 42;
+            }else{
+                falla();
+            }
+            break;
+        case 42:
+            //vretract();
+            strcpy(asTokens[k++],"&");
+            if (indice >= numBytesArch)
+                return;
+            iniToken=indice;
+            viniedos();
         }/*switch*/
     } /*while*/
     strcpy(asTokens[k], "$"); //es como la 3ra vez que soluciono este bug
@@ -471,7 +486,12 @@ void lexico::falla()
         fseek(Fd, (long)iniToken, SEEK_SET);
         break;
 
-    case 35: recuperaerror();
+    case 35: edoIni = 41;
+        indice = iniToken;
+        fseek(Fd, (long)iniToken, SEEK_SET);
+        break;
+
+    case 41: recuperaerror();
     }
 
     edoAct=edoIni;
